@@ -67,8 +67,8 @@ nav .container {
   gap: 0.8rem;
 }
 
-.nav-btns a img {
-  stroke: var(--text-color);
-  fill: var(--text-color);
-  color: var(--text-color);
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 2.4rem;
 }
