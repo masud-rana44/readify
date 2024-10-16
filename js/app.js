@@ -11,9 +11,15 @@ let genres = [];
 let books = [];
 
 async function fetchBooks() {
+  const selectedGenre = genreFilter.value;
+
   const params = new URLSearchParams({
     page: currentPage,
   });
+
+  if (selectedGenre) {
+    params.append("topic", selectedGenre);
+  }
 
   try {
     const response = await fetch(`${baseUrl}?${params}`);
@@ -184,4 +190,11 @@ function renderPagination() {
   pagination.appendChild(nextButton);
 }
 
-fetchBooks();
+genreFilter.addEventListener("change", () => {
+  currentPage = 1;
+  fetchBooks();
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+  fetchBooks();
+});
