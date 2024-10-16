@@ -7,8 +7,12 @@ let currentPage = 1;
 let totalPages = 1;
 
 async function fetchBooks() {
+  const params = new URLSearchParams({
+    page: currentPage,
+  });
+
   try {
-    const response = await fetch(baseUrl);
+    const response = await fetch(`${baseUrl}?${params}`);
     const data = await response.json();
     totalPages = Math.ceil(data.count / booksPerPage);
 
