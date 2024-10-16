@@ -1,11 +1,16 @@
 const booksGrid = document.getElementById("booksGrid");
 
+const booksPerPage = 32;
 const baseUrl = "https://gutendex.com/books";
+
+let currentPage = 1;
+let totalPages = 1;
 
 async function fetchBooks() {
   try {
     const response = await fetch(baseUrl);
     const data = await response.json();
+    totalPages = Math.ceil(data.count / booksPerPage);
 
     console.log({ data });
 
@@ -24,6 +29,7 @@ async function fetchBooks() {
     });
 
     booksGrid.appendChild(fragment);
+    renderPagination();
   } catch (error) {
     console.error("Error fetching books:", error);
     return null;
@@ -38,7 +44,9 @@ function createBookCard(book) {
     book.title.length > 40 ? `${book.title.slice(0, 40)}...` : book.title;
 
   bookCard.innerHTML = `
-  <img src=${book.formats["image/jpeg"]} alt=${book.title} />
+  <div class="book-image">
+    <img src=${book.formats["image/jpeg"]} alt=${book.title} />
+  </div>
   <div class="book-info">
     <h3 class="book-title">${bookTitle}</h3>
     <p class="book-author">${book.authors
@@ -55,6 +63,97 @@ function createBookCard(book) {
   `;
 
   return bookCard;
+}
+
+function renderPagination() {
+  pagination.innerHTML = "";
+
+  const createButton = ({ text, isDisabled, onClick, isCurrent }) => {
+    const button = document.createElement("button");
+    button.innerText = text;
+    button.disabled = isDisabled;
+    button.className = isCurrent ? "pagination-btn current" : "pagination-btn";
+    button.onclick = () => {
+      button.disabled = true;
+      onClick();
+    };
+    return button;
+  };
+
+  // Previous Button
+  const prevButton = createButton({
+    text: "❮",
+    isDisabled: currentPage === 1,
+    onClick: () => {
+      if (currentPage > 1) {
+        currentPage--;
+        fetchBooks();
+      }
+    },
+  });
+
+  pagination.appendChild(prevButton);
+
+  // Determine page numbers to display
+  let pageRange = [];
+  if (totalPages <= 10) {
+    for (let i = 1; i <= totalPages; i++) {
+      pageRange.push(i);
+    }
+  } else {
+    pageRange = [1, 2];
+
+    if (currentPage > 4) {
+      pageRange.push("...");
+    }
+
+    const start = Math.max(3, currentPage - 1);
+    const end = Math.min(currentPage + 1, totalPages - 2);
+
+    for (let i = start; i <= end; i++) {
+      pageRange.push(i);
+    }
+
+    if (currentPage < totalPages - 3) {
+      pageRange.push("...");
+    }
+
+    pageRange.push(totalPages - 1, totalPages);
+  }
+
+  pageRange.forEach((page) => {
+    if (page === "...") {
+      const ellipsis = document.createElement("span");
+      ellipsis.innerText = "...";
+      ellipsis.className = "ellipsis";
+      pagination.appendChild(ellipsis);
+    } else {
+      const pageButton = createButton({
+        text: page.toString(),
+        isDisabled: page === currentPage,
+        isCurrent: page === currentPage,
+        onClick: () => {
+          currentPage = page;
+          fetchBooks();
+        },
+      });
+      pagination.appendChild(pageButton);
+    }
+  });
+
+  // Next Button
+  const nextButton = createButton({
+    text: "❯",
+    isDisabled: currentPage === totalPages,
+    onClick: () => {
+      if (currentPage < totalPages) {
+        currentPage++;
+        fetchBooks();
+      }
+    },
+  });
+
+  pagination.appendChild(nextButton);
 }
 
 fetchBooks();
