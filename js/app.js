@@ -1,10 +1,14 @@
 const booksGrid = document.getElementById("booksGrid");
+const searchInput = document.getElementById("search");
+const genreFilter = document.getElementById("genre-filter");
 
 const booksPerPage = 32;
 const baseUrl = "https://gutendex.com/books";
 
 let currentPage = 1;
 let totalPages = 1;
+let genres = [];
+let books = [];
 
 async function fetchBooks() {
   const params = new URLSearchParams({
@@ -15,6 +19,7 @@ async function fetchBooks() {
     const response = await fetch(`${baseUrl}?${params}`);
     const data = await response.json();
     totalPages = Math.ceil(data.count / booksPerPage);
+    books = data.results;
 
     console.log({ data });
 
@@ -34,6 +39,7 @@ async function fetchBooks() {
 
     booksGrid.appendChild(fragment);
     renderPagination();
+    updateGenre();
   } catch (error) {
     console.error("Error fetching books:", error);
     return null;
@@ -67,6 +73,24 @@ function createBookCard(book) {
   `;
 
   return bookCard;
+}
+
+function updateGenre() {
+  genreFilter.innerHTML = '<option value="">All Genres</option>';
+  const fragment = document.createDocumentFragment();
+
+  const allGenres = books.flatMap((book) => book.bookshelves);
+  genres = Array.from(
+    new Set(allGenres.map((genre) => genre.replace(/Browsing: /g, "")))
+  );
+
+  genres.forEach((genre) => {
+    const option = document.createElement("option");
+    option.value = genre;
+    option.innerText = genre;
+    fragment.appendChild(option);
+  });
+  genreFilter.appendChild(fragment);
 }
 
 function renderPagination() {
