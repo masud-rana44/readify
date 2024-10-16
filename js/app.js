@@ -9,6 +9,7 @@ let currentPage = 1;
 let totalPages = 1;
 let genres = [];
 let books = [];
+let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
 
 async function fetchBooks() {
   const selectedGenre = genreFilter.value;
@@ -55,7 +56,10 @@ async function fetchBooks() {
 function createBookCard(book) {
   const bookCard = document.createElement("div");
   bookCard.className = "book-card";
-  const isWishlisted = false;
+  bookCard.dataset.id = book.id;
+
+  const isWishlisted = wishlist.findIndex((item) => item.id === book.id) !== -1;
+
   const bookTitle =
     book.title.length > 40 ? `${book.title.slice(0, 40)}...` : book.title;
 
@@ -78,7 +82,41 @@ function createBookCard(book) {
   </div>
   `;
 
+  const wishlistBtn = bookCard.querySelector(".wishlist-btn");
+  wishlistBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleWishlist(book);
+  });
+
   return bookCard;
+}
+
+function toggleWishlist(book) {
+  const bookData = {
+    id: book.id,
+    title: book.title,
+    authors: book.authors.map((author) => author.name).join(", "),
+    image: book.formats["image/jpeg"],
+  };
+
+  const index = wishlist.findIndex((item) => item.id === book.id);
+
+  if (index === -1) {
+    wishlist.push(bookData);
+  } else {
+    wishlist.splice(index, 1);
+  }
+
+  localStorage.setItem("wishlist", JSON.stringify(wishlist));
+
+  // Find the specific card and update its button state
+  const bookCard = document.querySelector(`.book-card[data-id='${book.id}']`);
+  if (bookCard) {
+    const wishlistBtn = bookCard.querySelector(".wishlist-btn svg");
+    if (wishlistBtn) {
+      wishlistBtn.setAttribute("fill", index === -1 ? "currentColor" : "none");
+    }
+  }
 }
 
 function updateGenre() {
