@@ -10,6 +10,8 @@ async function fetchBookDetails() {
     return;
   }
 
+  showLoader();
+
   try {
     const response = await fetch(`https://gutendex.com/books/${bookId}`);
     const book = await response.json();
@@ -17,6 +19,8 @@ async function fetchBookDetails() {
   } catch (error) {
     console.error("Error fetching book details:", error);
     bookDetailsContainer.innerHTML = "<p>Error loading book details.</p>";
+  } finally {
+    hideLoader();
   }
 }
 
@@ -71,6 +75,16 @@ function toggleWishlist(book) {
 
   localStorage.setItem("wishlist", JSON.stringify(wishlist));
   wishlistBtn.setAttribute("fill", index === -1 ? "currentColor" : "none");
+}
+
+function showLoader() {
+  bookDetailsContainer.innerHTML = '<div class="loader"></div>';
+}
+
+function hideLoader() {
+  const loader = document.querySelector(".loader");
+  if (!loader) return;
+  loader.remove();
 }
 
 fetchBookDetails();
