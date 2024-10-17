@@ -9,9 +9,11 @@ let currentPage = 1;
 let totalPages = 1;
 let genres = [];
 let books = [];
+let searchTimeout;
 let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
 
 async function fetchBooks() {
+  const searchTerm = searchInput.value;
   const selectedGenre = genreFilter.value;
 
   const params = new URLSearchParams({
@@ -20,6 +22,9 @@ async function fetchBooks() {
 
   if (selectedGenre) {
     params.append("topic", selectedGenre);
+  }
+  if (searchTerm) {
+    params.append("search", searchTerm);
   }
 
   try {
@@ -227,6 +232,15 @@ function renderPagination() {
 
   pagination.appendChild(nextButton);
 }
+
+searchInput.addEventListener("input", () => {
+  clearTimeout(searchTimeout);
+
+  searchTimeout = setTimeout(() => {
+    currentPage = 1;
+    fetchBooks();
+  }, 1000);
+});
 
 genreFilter.addEventListener("change", () => {
   currentPage = 1;
