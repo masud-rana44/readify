@@ -12,12 +12,21 @@ let books = [];
 let searchTimeout;
 let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
 
-async function fetchBooks() {
+let prefetchedBooks = {
+  prev: null,
+  next: null,
+};
+let prefetchedPage = {
+  prev: null,
+  next: null,
+};
+
+async function fetchBooks(page = currentPage) {
   const searchTerm = searchInput.value;
   const selectedGenre = genreFilter.value;
 
   const params = new URLSearchParams({
-    page: currentPage,
+    page,
   });
 
   if (selectedGenre) {
@@ -27,35 +36,46 @@ async function fetchBooks() {
     params.append("search", searchTerm);
   }
 
+  if (isPrefetchedData(page)) {
+    prefetchNextPage(page + 1);
+    prefetchPreviousPage(page - 1);
+    return;
+  }
+
   try {
     const response = await fetch(`${baseUrl}?${params}`);
     const data = await response.json();
     totalPages = Math.ceil(data.count / booksPerPage);
     books = data.results;
 
-    console.log({ data });
-
-    // Render the books data
-    const fragment = document.createDocumentFragment();
-    booksGrid.innerHTML = "";
-
-    if (data.count === 0) {
-      booksGrid.innerHTML = '<p class="text-center">No books found.</p>';
-      return;
-    }
-
-    data.results.forEach((book) => {
-      const bookCard = createBookCard(book);
-      fragment.appendChild(bookCard);
-    });
-
-    booksGrid.appendChild(fragment);
+    renderBooks();
     renderPagination();
     updateGenre();
+
+    // Prefetch next and prev page
+    prefetchNextPage(page + 1);
+    prefetchPreviousPage(page - 1);
   } catch (error) {
     console.error("Error fetching books:", error);
     return null;
   }
+}
+
+function renderBooks() {
+  const fragment = document.createDocumentFragment();
+  booksGrid.innerHTML = "";
+
+  if (books.length === 0) {
+    booksGrid.innerHTML = '<p class="text-center">No books found.</p>';
+    return;
+  }
+
+  books.forEach((book) => {
+    const bookCard = createBookCard(book);
+    fragment.appendChild(bookCard);
+  });
+
+  booksGrid.appendChild(fragment);
 }
 
 function createBookCard(book) {
@@ -222,7 +242,6 @@ function renderPagination() {
     }
   });
 
-  // Next Button
   const nextButton = createButton({
     text: "❯",
     isDisabled: currentPage === totalPages,
@@ -235,6 +254,68 @@ function renderPagination() {
   });
 
   pagination.appendChild(nextButton);
+}
+
+// PREFETCHING
+function isPrefetchedData(page) {
+  if (prefetchedPage.prev === page && prefetchedBooks.prev) {
+    applyPrefetchedData(prefetchedBooks.prev);
+    return true;
+  }
+
+  if (prefetchedPage.next === page && prefetchedBooks.next) {
+    applyPrefetchedData(prefetchedBooks.next);
+    return true;
+  }
+
+  return false;
+}
+
+function applyPrefetchedData(data) {
+  books = data.results;
+  totalPages = Math.ceil(data.count / booksPerPage);
+  renderBooks();
+  renderPagination();
+  updateGenre();
+}
+
+async function prefetchPage(page) {
+  if (page < 1 || page > totalPages) return;
+
+  const searchTerm = searchInput.value;
+  const selectedGenre = genreFilter.value;
+
+  const params = new URLSearchParams({
+    page,
+  });
+
+  console.log({ searchTerm, selectedGenre });
+
+  if (selectedGenre) {
+    params.append("topic", selectedGenre);
+  }
+  if (searchTerm) {
+    params.append("search", searchTerm);
+  }
+
+  try {
+    const response = await fetch(`https://gutendex.com/books?${params}`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error prefetching books:", error);
+    return null;
+  }
+}
+
+async function prefetchNextPage(nextPage) {
+  prefetchedBooks.next = await prefetchPage(nextPage);
+  prefetchedPage.next = nextPage;
+}
+
+async function prefetchPreviousPage(prevPage) {
+  prefetchedBooks.prev = await prefetchPage(prevPage);
+  prefetchedPage.prev = prevPage;
 }
 
 searchInput.addEventListener("input", () => {
