@@ -93,6 +93,10 @@ function createBookCard(book) {
     toggleWishlist(book);
   });
 
+  bookCard.addEventListener("click", () => {
+    window.location.href = `book-details.html?id=${book.id}`;
+  });
+
   return bookCard;
 }
 

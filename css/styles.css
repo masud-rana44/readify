@@ -226,3 +226,19 @@ main.container {
   cursor: not-allowed;
   transform: none;
 }
+
+/* BOOK DETAILS */
+.book-details .wishlist-btn {
+  position: static;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 0.25rem;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.book-details .wishlist-btn:hover {
+  background-color: var(--secondary-color);
+  transform: translateY(-2px);
+}
