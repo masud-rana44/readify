@@ -22,6 +22,7 @@ let prefetchedPage = {
 };
 
 async function fetchBooks(page = currentPage) {
+  showLoader();
   const searchTerm = searchInput.value;
   const selectedGenre = genreFilter.value;
 
@@ -37,6 +38,7 @@ async function fetchBooks(page = currentPage) {
   }
 
   if (isPrefetchedData(page)) {
+    hideLoader();
     prefetchNextPage(page + 1);
     prefetchPreviousPage(page - 1);
     return;
@@ -58,6 +60,8 @@ async function fetchBooks(page = currentPage) {
   } catch (error) {
     console.error("Error fetching books:", error);
     return null;
+  } finally {
+    hideLoader();
   }
 }
 
@@ -316,6 +320,18 @@ async function prefetchNextPage(nextPage) {
 async function prefetchPreviousPage(prevPage) {
   prefetchedBooks.prev = await prefetchPage(prevPage);
   prefetchedPage.prev = prevPage;
+}
+
+// LOADER
+function showLoader() {
+  booksGrid.innerHTML = '<div class="loader"></div>';
+}
+
+function hideLoader() {
+  const loader = document.querySelector(".loader");
+  if (loader) {
+    loader.remove();
+  }
 }
 
 searchInput.addEventListener("input", () => {
