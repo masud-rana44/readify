@@ -23,7 +23,7 @@ let prefetchedPage = {
 };
 
 async function fetchBooks(page = currentPage) {
-  showLoader();
+  showSkeletonLoader();
   const searchTerm = searchInput.value;
   const selectedGenre = genreFilter.value;
 
@@ -325,8 +325,23 @@ async function prefetchPreviousPage(prevPage) {
 }
 
 // LOADER
-function showLoader() {
+function showSpinnerLoader() {
   booksGridWrapper.innerHTML = '<div class="loader"></div>';
+}
+
+function showSkeletonLoader() {
+  booksGrid.innerHTML = "";
+  for (let i = 0; i < 8; i++) {
+    const skeletonCard = document.createElement("div");
+    skeletonCard.className = "skeleton-card";
+    skeletonCard.innerHTML = `
+            <div class="skeleton skeleton-image"></div>
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-text"></div>
+        `;
+    booksGrid.appendChild(skeletonCard);
+  }
 }
 
 function hideLoader() {
