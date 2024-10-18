@@ -1,9 +1,9 @@
 :root {
-  --primary-color: #4c1d95;
-  --secondary-color: #2e1065;
-  --background-color: #1f2937;
+  --primary-color: #6f2cf6;
+  --secondary-color: #6428dd;
+  --background-color: #212429;
   --text-color: #f3f4f6;
-  --card-background: #0f172a;
+  --card-background: #2b3034;
 }
 
 * {
@@ -30,7 +30,7 @@ body {
 
 nav {
   background-color: var(--primary-color);
-  padding: 1.6rem 0;
+  padding: 2rem 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: fixed;
   top: 0;
@@ -56,6 +56,10 @@ nav .container {
 
 .nav-logo:hover {
   transform: scale(1.05);
+}
+
+.nav-logo img {
+  margin-right: 0.5rem;
 }
 
 .nav-btns a {
