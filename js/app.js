@@ -1,4 +1,5 @@
 const booksGrid = document.getElementById("booksGrid");
+const booksGridWrapper = document.querySelector(".books-grid-wrapper");
 const searchInput = document.getElementById("search");
 const genreFilter = document.getElementById("genre-filter");
 
@@ -72,7 +73,7 @@ function renderBooks() {
   booksGrid.innerHTML = "";
 
   if (books.length === 0) {
-    booksGrid.innerHTML = '<p class="text-center">No books found.</p>';
+    booksGridWrapper.innerHTML = '<p class="not-found">No books found :)</p>';
     return;
   }
 
@@ -326,7 +327,7 @@ async function prefetchPreviousPage(prevPage) {
 
 // LOADER
 function showLoader() {
-  booksGrid.innerHTML = '<div class="loader"></div>';
+  booksGridWrapper.innerHTML = '<div class="loader"></div>';
 }
 
 function hideLoader() {
