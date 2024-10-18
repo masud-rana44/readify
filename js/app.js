@@ -48,7 +48,9 @@ async function fetchBooks(page = currentPage) {
     const response = await fetch(`${baseUrl}?${params}`);
     const data = await response.json();
     totalPages = Math.ceil(data.count / booksPerPage);
-    books = data.results;
+    // books = data.results;
+
+    books = [];
 
     renderBooks();
     renderPagination();
