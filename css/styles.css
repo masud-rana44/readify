@@ -142,13 +142,12 @@ main.container {
 }
 
 .books-grid {
-  flex: 1;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 2.4rem;
 }
 
-.not-found {
+.empty {
   font-size: 2.4rem;
   text-align: center;
   margin-top: 3.2rem;
@@ -239,6 +238,22 @@ main.container {
   right: 1.6rem;
 }
 
+.fade-out {
+  animation: fadeOut 0.3s ease-in-out forwards;
+}
+
+/* WISHLIST */
+#wishlist-grid .wishlist-btn {
+  top: 1.6rem;
+  right: 1.6rem;
+}
+
+#wishlist h2 {
+  font-size: 2.4rem;
+  margin-bottom: 1.6rem;
+  color: var(--text-color);
+}
+
 /* PAGINATION */
 .pagination {
   display: flex;
@@ -327,5 +342,16 @@ main.container {
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(20px);
+    display: none;
   }
 }

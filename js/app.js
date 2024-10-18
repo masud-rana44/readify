@@ -71,7 +71,7 @@ function renderBooks() {
   booksGrid.innerHTML = "";
 
   if (books.length === 0) {
-    booksGridWrapper.innerHTML = '<p class="not-found">No books found :)</p>';
+    booksGridWrapper.innerHTML = '<p class="empty">No books found :)</p>';
     return;
   }
 

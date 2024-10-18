@@ -3,8 +3,8 @@ let savedWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
 
 function getWishlistedBooks() {
   if (savedWishlist.length === 0) {
-    wishlistGrid.innerHTML =
-      '<p class="text-center">Your wishlist is empty.</p>';
+    wishlistGrid.style.display = "block";
+    wishlistGrid.innerHTML = '<p class="empty">Your wishlist is empty :)</p>';
     return;
   }
 
@@ -56,8 +56,12 @@ function removeFromWishlist(bookId) {
   localStorage.setItem("wishlist", JSON.stringify(savedWishlist));
 
   const bookCard = document.querySelector(`.book-card[data-id='${bookId}']`);
+
   if (bookCard) {
-    bookCard.remove();
+    bookCard.classList.add("fade-out");
+    bookCard.addEventListener("animationend", () => {
+      bookCard.remove();
+    });
   }
 }
 
