@@ -297,8 +297,6 @@ async function prefetchPage(page) {
     page,
   });
 
-  console.log({ searchTerm, selectedGenre });
-
   if (selectedGenre) {
     params.append("topic", selectedGenre);
   }
@@ -307,7 +305,7 @@ async function prefetchPage(page) {
   }
 
   try {
-    const response = await fetch(`https://gutendex.com/books?${params}`);
+    const response = await fetch(`${baseUrl}?${params}`);
     const data = await response.json();
     return data;
   } catch (error) {
