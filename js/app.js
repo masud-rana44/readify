@@ -11,7 +11,10 @@ let totalPages = 1;
 let genres = [];
 let books = [];
 let searchTimeout;
+
 let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+const userPreferences =
+  JSON.parse(localStorage.getItem("userPreferences")) || {};
 
 let prefetchedBooks = {
   prev: null,
@@ -21,6 +24,17 @@ let prefetchedPage = {
   prev: null,
   next: null,
 };
+
+searchInput.value = userPreferences.searchTerm || "";
+genreFilter.value = userPreferences.selectedGenre || "";
+
+function saveUserPreferences() {
+  const userPreferences = {
+    searchTerm: searchInput.value,
+    selectedGenre: genreFilter.value,
+  };
+  localStorage.setItem("userPreferences", JSON.stringify(userPreferences));
+}
 
 async function fetchBooks(page = currentPage) {
   showSkeletonLoader();
@@ -60,6 +74,15 @@ async function fetchBooks(page = currentPage) {
     prefetchPreviousPage(page - 1);
   } catch (error) {
     console.error("Error fetching books:", error);
+    booksGridWrapper.innerHTML = `<div class="error-container">
+      <p class="error">${error?.message || "An error occurred."}</p>
+      <button class="reset-btn">Please try again!</button>
+    </div>`;
+
+    const resetBtn = document.querySelector(".reset-btn");
+    resetBtn.addEventListener("click", () => {
+      fetchBooks();
+    });
     return null;
   } finally {
     hideSkeletonLoader();
@@ -310,6 +333,15 @@ async function prefetchPage(page) {
     return data;
   } catch (error) {
     console.error("Error prefetching books:", error);
+    booksGridWrapper.innerHTML = `<div class="error-container">
+      <p class="error">${error?.message || "An error occurred."}</p>
+      <button class="reset-btn">Please try again!</button>
+    </div>`;
+
+    const resetBtn = document.querySelector(".reset-btn");
+    resetBtn.addEventListener("click", () => {
+      fetchBooks();
+    });
     return null;
   }
 }
@@ -372,12 +404,14 @@ searchInput.addEventListener("input", () => {
   clearTimeout(searchTimeout);
 
   searchTimeout = setTimeout(() => {
+    saveUserPreferences();
     currentPage = 1;
     fetchBooks();
   }, 1000);
 });
 
 genreFilter.addEventListener("change", () => {
+  saveUserPreferences();
   currentPage = 1;
   fetchBooks();
 });
