@@ -69,12 +69,34 @@ function toggleWishlist(book) {
 
   if (index === -1) {
     wishlist.push(bookData);
+    showToast("Added to Wishlist");
   } else {
     wishlist.splice(index, 1);
+    showToast("Removed from Wishlist");
   }
 
   localStorage.setItem("wishlist", JSON.stringify(wishlist));
   wishlistBtn.setAttribute("fill", index === -1 ? "currentColor" : "none");
+}
+
+function showToast(message, duration = 3000) {
+  const toastContainer = document.getElementById("toast-container");
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.innerText = message;
+
+  toastContainer.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add("show");
+  }, 100);
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => {
+      toastContainer.removeChild(toast);
+    }, 500);
+  }, duration);
 }
 
 function showLoader() {

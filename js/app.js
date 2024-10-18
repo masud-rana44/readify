@@ -39,7 +39,7 @@ async function fetchBooks(page = currentPage) {
   }
 
   if (isPrefetchedData(page)) {
-    hideLoader();
+    hideSkeletonLoader();
     prefetchNextPage(page + 1);
     prefetchPreviousPage(page - 1);
     return;
@@ -62,7 +62,7 @@ async function fetchBooks(page = currentPage) {
     console.error("Error fetching books:", error);
     return null;
   } finally {
-    hideLoader();
+    hideSkeletonLoader();
   }
 }
 
@@ -138,8 +138,10 @@ function toggleWishlist(book) {
 
   if (index === -1) {
     wishlist.push(bookData);
+    showToast("Added to Wishlist");
   } else {
     wishlist.splice(index, 1);
+    showToast("Removed from Wishlist");
   }
 
   localStorage.setItem("wishlist", JSON.stringify(wishlist));
@@ -324,11 +326,28 @@ async function prefetchPreviousPage(prevPage) {
   prefetchedPage.prev = prevPage;
 }
 
-// LOADER
-function showSpinnerLoader() {
-  booksGridWrapper.innerHTML = '<div class="loader"></div>';
+// TOAST
+function showToast(message, duration = 3000) {
+  const toastContainer = document.getElementById("toast-container");
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.innerText = message;
+
+  toastContainer.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add("show");
+  }, 100);
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => {
+      toastContainer.removeChild(toast);
+    }, 500);
+  }, duration);
 }
 
+// LOADER
 function showSkeletonLoader() {
   booksGrid.innerHTML = "";
   for (let i = 0; i < 8; i++) {
@@ -344,7 +363,7 @@ function showSkeletonLoader() {
   }
 }
 
-function hideLoader() {
+function hideSkeletonLoader() {
   const loader = document.querySelector(".loader");
   if (loader) {
     loader.remove();
