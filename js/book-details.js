@@ -1,6 +1,8 @@
 const bookDetailsContainer = document.getElementById("book-details");
 let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
 
+let book = {};
+
 async function fetchBookDetails() {
   const urlParams = new URLSearchParams(window.location.search);
   const bookId = urlParams.get("id");
@@ -14,7 +16,7 @@ async function fetchBookDetails() {
 
   try {
     const response = await fetch(`https://gutendex.com/books/${bookId}`);
-    const book = await response.json();
+    book = await response.json();
     renderBookDetails(book);
   } catch (error) {
     console.error("Error fetching book details:", error);
@@ -26,8 +28,6 @@ async function fetchBookDetails() {
 
 function renderBookDetails(book) {
   const isWishlisted = wishlist.findIndex((item) => item.id === book.id) !== -1;
-
-  console.log({ book, isWishlisted });
 
   bookDetailsContainer.innerHTML = `
         <div class="book-details fade-in">
