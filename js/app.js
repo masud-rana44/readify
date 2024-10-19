@@ -143,7 +143,7 @@ function createBookCard(book) {
   });
 
   bookCard.addEventListener("click", () => {
-    window.location.href = `https://readify-v2.netlify.app/book-details.html?id=${book.id}`;
+    window.location.href = `/book-details.html?id=${book.id}`;
   });
 
   return bookCard;
